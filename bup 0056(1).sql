@@ -2,7 +2,7 @@
 
 USE tienda_jt;
 
--- Insertados los datos en las tablas
+-- Insertamos los datos en las tablas
 
 INSERT INTO `pais` VALUES (1,'Argentina'),(2,'España'),(3,'Estados Unidos'),(4,'Reino Unido'),(5,'Colombia'),(6,'México'),(7,'Francia'),(8,'Japón');
 INSERT INTO `editorial` VALUES (1,'Planeta',NULL,'contacto@planeta.com.ar'),(2,'Penguin Random House',NULL,'ventas@penguin.com'),(3,'Siglo XXI',NULL,'info@sigloxxieditores.com.ar'),(4,'Galerna',NULL,'pedidos@galerna.net'),(5,'Cuspide',NULL,'mayorista@cuspide.com');
