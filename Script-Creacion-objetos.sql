@@ -1,4 +1,4 @@
--- Creamos la base de datos de la Gomeria
+-- Creamos la base de datos de la tienda
 
 DROP SCHEMA IF EXISTS tienda_jt;
 
