@@ -314,45 +314,45 @@ DEFAULT CHARACTER SET = utf8mb4;
 --------------------------------------------------------
 DROP TABLE IF EXISTS `vw_alertas_reposicion`;
 DROP VIEW IF EXISTS `vw_alertas_reposicion` ;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_alertas_reposicion` AS select `l`.`titulo` AS `titulo`,`l`.`stock` AS `stock`,concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor` from (`libro` `l` join `autor` `a` on((`l`.`id_autor` = `a`.`id_autor`))) where (`l`.`stock` < 3);
+CREATE  OR REPLACE VIEW `vw_alertas_reposicion` AS select `l`.`titulo` AS `titulo`,`l`.`stock` AS `stock`,concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor` from (`libro` `l` join `autor` `a` on((`l`.`id_autor` = `a`.`id_autor`))) where (`l`.`stock` < 3);
 -- -----------------------------------------------------
 -- VISTA DE CATALOGO DISPONIBLE
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `vw_catalogo_disponible`;
 DROP VIEW IF EXISTS `vw_catalogo_disponible` ;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_catalogo_disponible` AS select `l`.`id_libro` AS `id_libro`,`l`.`titulo` AS `titulo`,`l`.`precio` AS `precio`,`l`.`stock` AS `stock`,concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor` from (`libro` `l` join `autor` `a` on((`l`.`id_autor` = `a`.`id_autor`))) where (`l`.`stock` > 0);
+CREATE  OR REPLACE VIEW `vw_catalogo_disponible` AS select `l`.`id_libro` AS `id_libro`,`l`.`titulo` AS `titulo`,`l`.`precio` AS `precio`,`l`.`stock` AS `stock`,concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor` from (`libro` `l` join `autor` `a` on((`l`.`id_autor` = `a`.`id_autor`))) where (`l`.`stock` > 0);
 -- -----------------------------------------------------
 -- VISTA DETALLE PEDIDOS COMPLETOS
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `vw_detalle_pedidos_completos`;
 DROP VIEW IF EXISTS `vw_detalle_pedidos_completos` ;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_detalle_pedidos_completos` AS select `p`.`id_pedido` AS `id_pedido`,`p`.`fecha` AS `fecha`,concat(`c`.`nombre`,' ',`c`.`apellido`) AS `cliente`,`l`.`titulo` AS `libro`,`dp`.`cantidad` AS `cantidad`,`dp`.`precio` AS `precio`,(`dp`.`cantidad` * `dp`.`precio`) AS `subtotal` from (((`pedido` `p` join `cliente` `c` on((`p`.`id_cliente` = `c`.`id_cliente`))) join `detallepedido` `dp` on((`p`.`id_pedido` = `dp`.`id_pedido`))) join `libro` `l` on((`dp`.`id_libro` = `l`.`id_libro`)));
+CREATE  OR REPLACE VIEW `vw_detalle_pedidos_completos` AS select `p`.`id_pedido` AS `id_pedido`,`p`.`fecha` AS `fecha`,concat(`c`.`nombre`,' ',`c`.`apellido`) AS `cliente`,`l`.`titulo` AS `libro`,`dp`.`cantidad` AS `cantidad`,`dp`.`precio` AS `precio`,(`dp`.`cantidad` * `dp`.`precio`) AS `subtotal` from (((`pedido` `p` join `cliente` `c` on((`p`.`id_cliente` = `c`.`id_cliente`))) join `detallepedido` `dp` on((`p`.`id_pedido` = `dp`.`id_pedido`))) join `libro` `l` on((`dp`.`id_libro` = `l`.`id_libro`)));
 -- -----------------------------------------------------
 -- VISTA LIBROS POR AUTOR
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `vw_libros_por_autor`;
 DROP VIEW IF EXISTS `vw_libros_por_autor` ;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_libros_por_autor` AS select concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor`,count(`l`.`id_libro`) AS `cantidad_titulos` from (`autor` `a` left join `libro` `l` on((`a`.`id_autor` = `l`.`id_autor`))) group by `a`.`id_autor`,`a`.`nombre`,`a`.`apellido`;
+CREATE  OR REPLACE VIEW `vw_libros_por_autor` AS select concat(`a`.`nombre`,' ',`a`.`apellido`) AS `autor`,count(`l`.`id_libro`) AS `cantidad_titulos` from (`autor` `a` left join `libro` `l` on((`a`.`id_autor` = `l`.`id_autor`))) group by `a`.`id_autor`,`a`.`nombre`,`a`.`apellido`;
 -- -----------------------------------------------------
--- VISTA RANKIG DE VENTAS CLIENTE
+-- VISTA RANKING DE VENTAS CLIENTE
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `vw_ranking_ventas_cliente`;
 DROP VIEW IF EXISTS `vw_ranking_ventas_cliente` ;
-CREATE  OR REPLACE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_ranking_ventas_cliente` AS select `c`.`id_cliente` AS `id_cliente`,concat(`c`.`nombre`,' ',`c`.`apellido`) AS `cliente`,count(`p`.`id_pedido`) AS `cantidad_pedidos` from (`cliente` `c` left join `pedido` `p` on((`c`.`id_cliente` = `p`.`id_cliente`))) group by `c`.`id_cliente`,`c`.`nombre`,`c`.`apellido`;
+CREATE  OR REPLACE VIEW `vw_ranking_ventas_cliente` AS select `c`.`id_cliente` AS `id_cliente`,concat(`c`.`nombre`,' ',`c`.`apellido`) AS `cliente`,count(`p`.`id_pedido`) AS `cantidad_pedidos` from (`cliente` `c` left join `pedido` `p` on((`c`.`id_cliente` = `p`.`id_cliente`))) group by `c`.`id_cliente`,`c`.`nombre`,`c`.`apellido`;
 
 DELIMITER $$
 
--- CREACION DE FUNCIONES 
+DELIMITER $$
+
 -- -----------------------------------------------------
 -- FUNCION OBTENER EMAIL DE CLIENTE
 -- -----------------------------------------------------
-DROP function IF EXISTS `fn_obtener_email_cliente`;
+DROP FUNCTION IF EXISTS `fn_obtener_email_cliente`$$
 
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_obtener_email_cliente`(
+CREATE FUNCTION `fn_obtener_email_cliente`(
     p_id_cliente INT
-) RETURNS varchar(100) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
-    DETERMINISTIC
+) RETURNS varchar(100) CHARSET utf8mb4
+    READS SQL DATA
 BEGIN
     DECLARE v_email VARCHAR(100);
 
@@ -364,15 +364,13 @@ BEGIN
     RETURN v_email;
 END$$
 
-DELIMITER ;
 -- -----------------------------------------------------
 -- FUNCION VALOR INVENTARIO TOTAL
 -- -----------------------------------------------------
-DROP function IF EXISTS `fn_valor_inventario_total`;
+DROP FUNCTION IF EXISTS `fn_valor_inventario_total`$$
 
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` FUNCTION `fn_valor_inventario_total`() RETURNS decimal(12,2)
-    DETERMINISTIC
+CREATE FUNCTION `fn_valor_inventario_total`() RETURNS decimal(12,2)
+    READS SQL DATA
 BEGIN
     DECLARE total DECIMAL(12,2);
 
@@ -383,14 +381,12 @@ BEGIN
     RETURN IFNULL(total, 0);
 END$$
 
-DELIMITER ;
 -- -----------------------------------------------------
--- STORED PROCEDURES ACTUALIZAR STOCK LIBRO
+-- STORED PROCEDURE ACTUALIZAR STOCK LIBRO
 -- -----------------------------------------------------
-DROP procedure IF EXISTS `sp_actualizar_stock_libro`;
+DROP PROCEDURE IF EXISTS `sp_actualizar_stock_libro`$$
 
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_actualizar_stock_libro`(
+CREATE PROCEDURE `sp_actualizar_stock_libro`(
     IN p_id_libro INT,
     IN p_nuevo_stock INT
 )
@@ -400,14 +396,12 @@ BEGIN
     WHERE id_libro = p_id_libro;
 END$$
 
-DELIMITER ;
 -- -----------------------------------------------------
--- STORED PROCEDURES ELIMINAR PEDIDO CASCADA
+-- STORED PROCEDURE ELIMINAR PEDIDO CASCADA
 -- -----------------------------------------------------
-DROP procedure IF EXISTS `sp_eliminar_pedido_cascada`;
+DROP PROCEDURE IF EXISTS `sp_eliminar_pedido_cascada`$$
 
-DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_eliminar_pedido_cascada`(
+CREATE PROCEDURE `sp_eliminar_pedido_cascada`(
     IN p_id_pedido INT
 )
 BEGIN
@@ -420,15 +414,13 @@ BEGIN
     WHERE id_pedido = p_id_pedido;
 END$$
 
-DELIMITER ;
 -- -----------------------------------------------------
--- CREACION DE TRIGGER LOG NUEVOS CLIENTES
+-- TRIGGER LOG NUEVOS CLIENTES
 -- -----------------------------------------------------
-DROP TRIGGER IF EXISTS `tr_log_nuevos_clientes` $$
-CREATE
-DEFINER=`root`@`localhost`
-TRIGGER `tienda_jt`.`tr_log_nuevos_clientes`
-AFTER INSERT ON `tienda_jt`.`cliente`
+DROP TRIGGER IF EXISTS `tr_log_nuevos_clientes`$$
+
+CREATE TRIGGER `tr_log_nuevos_clientes`
+AFTER INSERT ON `cliente`
 FOR EACH ROW
 BEGIN
     INSERT INTO log_clientes (
@@ -447,15 +439,13 @@ BEGIN
     );
 END$$
 
-DELIMITER ;
 -- -----------------------------------------------------
--- CREACION DE TRIGGER CHEQUEO PRECIO POSITIVO
+-- TRIGGER CHEQUEO PRECIO POSITIVO
 -- -----------------------------------------------------
-DROP TRIGGER IF EXISTS `tr_check_precio_positivo` $$
-CREATE
-DEFINER=`root`@`localhost`
-TRIGGER `tienda_jt`.`tr_check_precio_positivo`
-BEFORE INSERT ON `tienda_jt`.`libro`
+DROP TRIGGER IF EXISTS `tr_check_precio_positivo`$$
+
+CREATE TRIGGER `tr_check_precio_positivo`
+BEFORE INSERT ON `libro`
 FOR EACH ROW
 BEGIN
     IF NEW.precio <= 0 THEN
@@ -464,5 +454,6 @@ BEGIN
     END IF;
 END$$
 
+DELIMITER ;
 
 DELIMITER ;
