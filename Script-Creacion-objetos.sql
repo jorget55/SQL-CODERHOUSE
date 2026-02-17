@@ -24,7 +24,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `autor`
+-- Tabla `autor`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `autor` ;
 
@@ -46,7 +46,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `membresia`
+-- Tabla `membresia`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `membresia` ;
 
@@ -62,7 +62,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `cliente`
+-- Tabla `cliente`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `cliente` ;
 
@@ -86,7 +86,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `editorial`
+-- Tabla `editorial`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `editorial` ;
 
@@ -102,7 +102,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `genero_libros`
+-- Tabla `genero_libros`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `genero_libros` ;
 
@@ -116,7 +116,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `libro`
+-- Tabla `libro`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `libro` ;
 
@@ -153,7 +153,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `empleado`
+-- Tabla `empleado`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `empleado` ;
 
@@ -170,7 +170,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `metodo_pago`
+-- Tabla `metodo_pago`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `metodo_pago` ;
 
@@ -184,7 +184,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `pedido`
+-- Tabla `pedido`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `pedido` ;
 
@@ -217,7 +217,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `detallepedido`
+-- Tabla `detallepedido`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `detallepedido` ;
 
@@ -237,9 +237,28 @@ CREATE TABLE IF NOT EXISTS `detallepedido` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4;
 
-
 -- -----------------------------------------------------
--- Table `envio`
+-- Tabla `movimientos_stock`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `movimientos_stock`;
+
+CREATE TABLE IF NOT EXISTS `movimientos_stock` (
+  `id_movimiento` INT NOT NULL AUTO_INCREMENT,
+  `id_libro` INT NOT NULL,
+  `fecha` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `tipo_movimiento` VARCHAR(20) NOT NULL, -- Ej: 'Compra', 'Venta', 'Devolucion', 'Ajuste'
+  `cantidad` INT NOT NULL, -- Positivo para entrada, Negativo para salida
+  `observacion` VARCHAR(150) NULL,
+  PRIMARY KEY (`id_movimiento`),
+  INDEX `fk_mov_libro` (`id_libro` ASC),
+  CONSTRAINT `fk_mov_libro`
+    FOREIGN KEY (`id_libro`)
+    REFERENCES `libro` (`id_libro`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE = InnoDB DEFAULT CHARACTER SET = utf8mb4;
+-- -----------------------------------------------------
+-- Tabla `envio`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `envio` ;
 
@@ -265,7 +284,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `log_clientes`
+-- Tabla `log_clientes`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `log_clientes` ;
 
@@ -283,7 +302,7 @@ DEFAULT CHARACTER SET = utf8mb4;
 
 
 -- -----------------------------------------------------
--- Table `resena`
+-- Tabla `resena`
 -- -----------------------------------------------------
 DROP TABLE IF EXISTS `resena` ;
 
